@@ -1,27 +1,15 @@
-# server/app.py
-#!/usr/bin/env python3
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_serializer import SerializerMixin
 
-from flask import Flask, make_response
-from flask_migrate import Migrate
+db = SQLAlchemy()
 
-from models import db, Earthquake
+class Earthquake(db.Model, SerializerMixin):
+    __tablename__ = 'earthquakes'
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.json.compact = False
+    id = db.Column(db.Integer, primary_key=True)
+    magnitude = db.Column(db.Float)
+    location = db.Column(db.String)
+    year = db.Column(db.Integer)
 
-migrate = Migrate(app, db)
-db.init_app(app)
-
-
-@app.route('/')
-def index():
-    body = {'message': 'Flask SQLAlchemy Lab 1'}
-    return make_response(body, 200)
-
-# Add views here
-
-
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    def __repr__(self):
+        return f'<Earthquake {self.id}, {self.magnitude}, {self.location}, {self.year}>'
